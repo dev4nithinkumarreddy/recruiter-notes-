@@ -106,8 +106,10 @@ export default function CandidateList() {
                       </div>
                     </td>
                     <td style={{ padding: '16px' }}>
-                      <div style={{ fontWeight: 500 }}>{c.currentRole}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{c.currentCompany} • {c.experience} yrs</div>
+                      <div style={{ fontWeight: 500 }}>{c.currentRole || 'Role not specified'}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                        {c.currentCompany ? `${c.currentCompany} • ` : ''}{c.experience} yrs
+                      </div>
                     </td>
                     <td style={{ padding: '16px' }}>
                       {job ? (

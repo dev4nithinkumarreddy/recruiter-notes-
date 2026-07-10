@@ -40,7 +40,7 @@ ${resumeText.substring(0, 15000)} // Truncating to avoid token limits just in ca
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'llama-3.1-8b-instant', // Fast and cheap for structured extraction
+      model: 'llama-3.1-70b-versatile', // High accuracy for structured extraction
       messages: [
         { role: 'system', content: 'You are a helpful assistant that strictly outputs JSON.' },
         { role: 'user', content: prompt }

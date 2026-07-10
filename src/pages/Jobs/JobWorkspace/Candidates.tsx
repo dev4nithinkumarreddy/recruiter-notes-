@@ -117,8 +117,10 @@ export default function Candidates() {
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{c.email}</div>
                   </td>
                   <td>
-                    <div>{c.currentRole}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>at {c.currentCompany}</div>
+                    <div>{c.currentRole || 'Role not specified'}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {c.currentCompany ? `at ${c.currentCompany}` : ''}
+                    </div>
                   </td>
                   <td>{c.experience} Yrs</td>
                   <td><span className="badge badge-muted">{c.source}</span></td>
