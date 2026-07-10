@@ -51,7 +51,7 @@ export default function AnalyticsTab() {
     .sort((a, b) => b.value - a.value);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%', overflowY: 'auto', paddingRight: '4px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%', overflowY: 'auto', paddingRight: '4px', paddingBottom: '80px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Job Analytics</h2>
       </div>

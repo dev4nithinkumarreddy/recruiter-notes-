@@ -97,7 +97,7 @@ export default function Candidates() {
       </div>
 
       {filtered.length > 0 ? (
-        <div className={styles.tableContainer} style={{ flex: 1, overflowY: 'auto' }}>
+        <div className={styles.tableContainer} style={{ flex: 1, overflowY: 'auto', paddingBottom: '80px' }}>
           <table className={styles.table}>
             <thead>
               <tr>

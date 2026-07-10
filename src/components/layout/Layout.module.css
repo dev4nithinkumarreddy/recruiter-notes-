@@ -15,12 +15,12 @@
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: 28px;
+  padding: 28px 28px 100px 28px;
   animation: fadeIn 200ms ease;
 }
 
 @media (max-width: 768px) {
   .content {
-    padding: 16px;
+    padding: 16px 16px 80px 16px;
   }
 }

@@ -61,7 +61,7 @@ export default function Shortlisted() {
         </div>
       </div>
 
-      <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', paddingBottom: '80px' }}>
         {filtered.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
             No shortlisted candidates found. Try updating candidate stages to "Shortlisted".
