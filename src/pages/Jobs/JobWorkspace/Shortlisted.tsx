@@ -8,6 +8,7 @@ import { toast } from '../../../components/ui/Toast';
 import { Search, Mail, Calendar as CalendarIcon, XCircle } from 'lucide-react';
 import { Input } from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
+import styles from './JobWorkspace.module.css';
 
 export default function Shortlisted() {
   const { job } = useOutletContext<{ job: Job }>();
@@ -66,8 +67,8 @@ export default function Shortlisted() {
             No shortlisted candidates found. Try updating candidate stages to "Shortlisted".
           </div>
         ) : (
-          <div className="table-responsive" style={{ flex: 1 }}>
-            <table className="table" style={{ width: '100%', minWidth: '800px' }}>
+          <div className={styles.tableContainer} style={{ flex: 1, overflowY: 'auto' }}>
+            <table className={styles.table}>
               <thead>
                 <tr>
                   <th>Candidate</th>
