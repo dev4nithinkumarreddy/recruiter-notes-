@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Target, TrendingUp, CheckCircle, Clock } from 'lucide-react';
 import { useTrackerStore } from '../../store/useTrackerStore';
 import Button from '../../components/ui/Button';
@@ -21,17 +21,29 @@ export default function DailyTracker() {
   });
 
   // Update local state when log changes from store
-  useState(() => {
-    if (log) setFormData({
-      candidatesSourced: log.candidatesSourced,
-      callsMade: log.callsMade,
-      interviewsScheduled: log.interviewsScheduled,
-      offers: log.offers,
-      closures: log.closures,
-      pendingFollowups: log.pendingFollowups,
-      notes: log.notes
-    });
-  });
+  useEffect(() => {
+    if (log) {
+      setFormData({
+        candidatesSourced: log.candidatesSourced,
+        callsMade: log.callsMade,
+        interviewsScheduled: log.interviewsScheduled,
+        offers: log.offers,
+        closures: log.closures,
+        pendingFollowups: log.pendingFollowups,
+        notes: log.notes
+      });
+    } else {
+      setFormData({
+        candidatesSourced: 0,
+        callsMade: 0,
+        interviewsScheduled: 0,
+        offers: 0,
+        closures: 0,
+        pendingFollowups: 0,
+        notes: ''
+      });
+    }
+  }, [log]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

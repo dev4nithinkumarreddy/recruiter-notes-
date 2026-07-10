@@ -10,6 +10,8 @@ import JobPipeline from './pages/Jobs/JobWorkspace/Pipeline';
 import JobTodoList from './pages/Jobs/JobWorkspace/TodoList';
 import JobNotes from './pages/Jobs/JobWorkspace/Notes';
 import JobActivity from './pages/Jobs/JobWorkspace/ActivityTimeline';
+import Shortlisted from './pages/Jobs/JobWorkspace/Shortlisted';
+import AnalyticsTab from './pages/Jobs/JobWorkspace/AnalyticsTab';
 import CandidateList from './pages/Candidates/CandidateList';
 import CandidateProfile from './pages/Candidates/CandidateProfile';
 import CompanyList from './pages/Companies/CompanyList';
@@ -32,12 +34,12 @@ export default function App() {
           <Route index element={<JobOverview />} />
           <Route path="description" element={<JobDescription />} />
           <Route path="candidates" element={<JobCandidates />} />
-          <Route path="shortlisted" element={<div style={{padding: 24}}>Shortlisted Tab Coming Soon</div>} />
+          <Route path="shortlisted" element={<Shortlisted />} />
           <Route path="pipeline" element={<JobPipeline />} />
           <Route path="tasks" element={<JobTodoList />} />
           <Route path="notes" element={<JobNotes />} />
           <Route path="activity" element={<JobActivity />} />
-          <Route path="analytics" element={<div style={{padding: 24}}>Analytics Tab Coming Soon</div>} />
+          <Route path="analytics" element={<AnalyticsTab />} />
         </Route>
 
         <Route path="/candidates" element={<CandidateList />} />
