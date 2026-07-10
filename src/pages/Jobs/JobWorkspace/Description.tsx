@@ -14,7 +14,7 @@ export default function JobDescription() {
         </div>
       </div>
 
-      <div style={{ background: 'var(--surface)', padding: '32px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', minHeight: '400px' }}>
+      <div style={{ background: 'var(--surface)', padding: '32px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', minHeight: '400px', flex: 1, overflowY: 'auto' }}>
         {job.description ? (
           <div 
             style={{ 
