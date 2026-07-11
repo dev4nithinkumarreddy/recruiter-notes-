@@ -132,7 +132,7 @@ export default function CandidateList() {
                               size={14} 
                               onClick={() => updateCandidate(c.id, { rating: star })}
                               fill={c.rating && c.rating >= star ? 'var(--warning)' : 'transparent'}
-                              color={c.rating && c.rating >= star ? 'var(--warning)' : 'var(--border)'}
+                              color={c.rating && c.rating >= star ? 'var(--warning)' : '#000'}
                               style={{ cursor: 'pointer', transition: 'all 0.2s' }}
                             />
                           ))}
