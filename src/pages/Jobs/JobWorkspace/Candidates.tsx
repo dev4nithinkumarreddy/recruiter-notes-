@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Plus, Search, Filter, MoreVertical, Eye, FileText, CheckCircle, XCircle, ArrowRight, Users } from 'lucide-react';
+import { Plus, Search, Filter, MoreVertical, Eye, FileText, CheckCircle, XCircle, ArrowRight, Users, Star } from 'lucide-react';
 import { useCandidateStore } from '../../../store/useCandidateStore';
 import { useActivityStore } from '../../../store/useActivityStore';
 import { formatDate } from '../../../utils/dateUtils';
@@ -22,7 +22,7 @@ export default function Candidates() {
   const navigate = useNavigate();
   
   const candidates = useCandidateStore(s => s.getCandidatesForJob(job.id));
-  const { addCandidate, moveStage, toggleShortlisted } = useCandidateStore();
+  const { addCandidate, moveStage, toggleShortlisted, updateCandidate } = useCandidateStore();
   const logActivity = useActivityStore(s => s.log);
 
   const [search, setSearch] = useState('');
@@ -105,6 +105,7 @@ export default function Candidates() {
                 <th>Current Role</th>
                 <th>Experience</th>
                 <th>Source</th>
+                <th>Review</th>
                 <th>Stage</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
@@ -124,6 +125,38 @@ export default function Candidates() {
                   </td>
                   <td>{c.experience} Yrs</td>
                   <td><span className="badge badge-muted">{c.source}</span></td>
+                  <td style={{ verticalAlign: 'top' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', gap: '2px' }}>
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <Star 
+                            key={star} 
+                            size={14} 
+                            onClick={() => updateCandidate(c.id, { rating: star })}
+                            fill={c.rating && c.rating >= star ? 'var(--warning)' : 'transparent'}
+                            color={c.rating && c.rating >= star ? 'var(--warning)' : '#000'}
+                            style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                          />
+                        ))}
+                      </div>
+                      <input 
+                        type="text" 
+                        placeholder="Quick note..." 
+                        defaultValue={c.notes || ''}
+                        onBlur={(e) => updateCandidate(c.id, { notes: e.target.value })}
+                        style={{
+                          width: '100%',
+                          minWidth: '120px',
+                          padding: '4px 8px',
+                          fontSize: '0.75rem',
+                          border: '1px solid var(--border)',
+                          borderRadius: 'var(--radius-sm)',
+                          background: 'var(--surface-2)',
+                          color: 'var(--text-primary)'
+                        }}
+                      />
+                    </div>
+                  </td>
                   <td>
                     <select
                       value={c.stage}
