@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Users, ExternalLink, Eye, Phone, Mail, Building2, Briefcase } from 'lucide-react';
+import { Search, Users, ExternalLink, Eye, Phone, Mail, Building2, Briefcase, Star } from 'lucide-react';
 import { useCandidateStore } from '../../store/useCandidateStore';
 import { useJobStore } from '../../store/useJobStore';
 import { useCompanyStore } from '../../store/useCompanyStore';
@@ -12,6 +12,7 @@ import { PIPELINE_STAGES } from '../../types';
 export default function CandidateList() {
   const navigate = useNavigate();
   const candidates = useCandidateStore(s => s.candidates);
+  const updateCandidate = useCandidateStore(s => s.updateCandidate);
   const jobs = useJobStore(s => s.jobs);
   const companies = useCompanyStore(s => s.companies);
   
@@ -89,6 +90,7 @@ export default function CandidateList() {
                 <th style={{ padding: '12px 16px', fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Candidate</th>
                 <th style={{ padding: '12px 16px', fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Current Role</th>
                 <th style={{ padding: '12px 16px', fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Applied Job</th>
+                <th style={{ padding: '12px 16px', fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Review</th>
                 <th style={{ padding: '12px 16px', fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Stage</th>
                 <th style={{ padding: '12px 16px', fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Actions</th>
               </tr>
@@ -120,6 +122,38 @@ export default function CandidateList() {
                           </span>
                         </div>
                       ) : <span style={{ color: 'var(--text-muted)' }}>Unknown Job</span>}
+                    </td>
+                    <td style={{ padding: '16px', verticalAlign: 'top' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', gap: '2px' }}>
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <Star 
+                              key={star} 
+                              size={14} 
+                              onClick={() => updateCandidate(c.id, { rating: star })}
+                              fill={c.rating && c.rating >= star ? 'var(--warning)' : 'transparent'}
+                              color={c.rating && c.rating >= star ? 'var(--warning)' : 'var(--border)'}
+                              style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                            />
+                          ))}
+                        </div>
+                        <input 
+                          type="text" 
+                          placeholder="Quick note..." 
+                          defaultValue={c.notes || ''}
+                          onBlur={(e) => updateCandidate(c.id, { notes: e.target.value })}
+                          style={{
+                            width: '100%',
+                            minWidth: '120px',
+                            padding: '4px 8px',
+                            fontSize: '0.75rem',
+                            border: '1px solid var(--border)',
+                            borderRadius: 'var(--radius-sm)',
+                            background: 'var(--surface-2)',
+                            color: 'var(--text-primary)'
+                          }}
+                        />
+                      </div>
                     </td>
                     <td style={{ padding: '16px' }}>
                       <select

@@ -114,6 +114,7 @@ export interface Candidate {
   resumes: FileRef[];
   notes: string;
   tags: string[];
+  rating?: number;
   aiScore?: number;
   aiSummary?: string;
   isShortlisted: boolean;
