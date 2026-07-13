@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Plus, Search, Filter, MoreVertical, Eye, FileText, CheckCircle, XCircle, ArrowRight, Users, Star } from 'lucide-react';
+import { Plus, Search, Filter, MoreVertical, Eye, FileText, CheckCircle, XCircle, ArrowRight, Users, Star, UploadCloud } from 'lucide-react';
 import { useCandidateStore } from '../../../store/useCandidateStore';
 import { useActivityStore } from '../../../store/useActivityStore';
 import { formatDate } from '../../../utils/dateUtils';
@@ -28,6 +28,33 @@ export default function Candidates() {
   const [search, setSearch] = useState('');
   const [stageFilter, setStageFilter] = useState<PipelineStage | 'All'>('All');
   const [isAddModalOpen, setAddModalOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [droppedFile, setDroppedFile] = useState<File | null>(null);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      if (file.type === 'application/pdf' || file.name.endsWith('.pdf') || file.name.endsWith('.doc') || file.name.endsWith('.docx')) {
+        setDroppedFile(file);
+        setAddModalOpen(true);
+      } else {
+        toast.error('Please drop a valid resume file (.pdf, .doc, .docx)');
+      }
+    }
+  };
 
   // Filter candidates
   const filtered = candidates.filter(c => {
@@ -67,7 +94,36 @@ export default function Candidates() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%' }}>
+    <div 
+      style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%', position: 'relative' }}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {/* Drag Overlay */}
+      {isDragging && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          border: '2px dashed var(--primary)',
+          borderRadius: 'var(--radius-lg)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 50,
+          backdropFilter: 'blur(2px)'
+        }}>
+          <UploadCloud size={64} color="var(--primary)" style={{ marginBottom: '16px' }} />
+          <h2 style={{ color: 'var(--primary)', fontWeight: 600 }}>Drop Resume Here</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>We'll automatically extract the details</p>
+        </div>
+      )}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <div style={{ position: 'relative', width: '240px' }}>
@@ -223,7 +279,11 @@ export default function Candidates() {
         <AddCandidateModal 
           jobId={job.id} 
           open={isAddModalOpen} 
-          onClose={() => setAddModalOpen(false)} 
+          onClose={() => {
+            setAddModalOpen(false);
+            setDroppedFile(null);
+          }} 
+          initialFile={droppedFile || undefined}
         />
       )}
     </div>
@@ -238,6 +298,7 @@ interface AddCandidateModalProps {
   jobId: string;
   open: boolean;
   onClose: () => void;
+  initialFile?: File;
 }
 
 type CandidateFormData = {
@@ -248,19 +309,17 @@ type CandidateFormData = {
   resume?: FileList;
 };
 
-function AddCandidateModal({ jobId, open, onClose }: AddCandidateModalProps) {
+function AddCandidateModal({ jobId, open, onClose, initialFile }: AddCandidateModalProps) {
   const addCandidate = useCandidateStore(s => s.addCandidate);
   const logActivity = useActivityStore(s => s.log);
   const groqKey = useSettingsStore(s => s.settings.groqKey);
 
   const [isExtracting, setIsExtracting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(initialFile || null);
 
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<CandidateFormData>();
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || file.type !== 'application/pdf') return;
-
+  const performExtraction = async (file: File) => {
     if (!groqKey) {
       toast.info('Groq API Key not set. AI extraction skipped.');
       return;
@@ -277,7 +336,6 @@ function AddCandidateModal({ jobId, open, onClose }: AddCandidateModalProps) {
       if (details.experience !== undefined) setValue('experience', details.experience);
       if (details.notes) setValue('notes', details.notes);
       
-      // Assuming we'll add other fields to CandidateFormData in the future or we could log them
       if (details.skills && details.skills.length > 0) {
         setValue('notes', (details.notes || '') + '\n\nSkills: ' + details.skills.join(', '));
       }
@@ -289,6 +347,20 @@ function AddCandidateModal({ jobId, open, onClose }: AddCandidateModalProps) {
     } finally {
       setIsExtracting(false);
     }
+  };
+
+  useEffect(() => {
+    if (initialFile) {
+      performExtraction(initialFile);
+    }
+  }, [initialFile]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || file.type !== 'application/pdf') return;
+    
+    setSelectedFile(file);
+    await performExtraction(file);
   };
 
   const onSubmit = async (data: CandidateFormData) => {
@@ -316,7 +388,7 @@ function AddCandidateModal({ jobId, open, onClose }: AddCandidateModalProps) {
       isShared: false,
     });
     
-    const file = data.resume?.[0];
+    const file = selectedFile || data.resume?.[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
         toast.warning('Candidate added, but resume was too large (max 10MB).');
@@ -401,6 +473,7 @@ function AddCandidateModal({ jobId, open, onClose }: AddCandidateModalProps) {
                 flex: 1
               }} 
             />
+            {selectedFile && <span style={{ fontSize: '0.75rem', color: 'var(--success)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>{selectedFile.name}</span>}
             {isExtracting && <span style={{ fontSize: '0.857rem', color: 'var(--primary)' }}>Extracting...</span>}
           </div>
         </div>
